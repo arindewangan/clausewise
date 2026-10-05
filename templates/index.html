@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clausewise — Agentic Contract Review on NVIDIA Nemotron × Nebius</title>
+<style>
+  :root{
+    --bg:#0b0f1a; --panel:#111827; --panel2:#0f172a; --line:#1f2a44;
+    --txt:#e8eefc; --muted:#93a3c4; --accent:#7dd3fc; --green:#34d399;
+    --amber:#fbbf24; --red:#f87171; --violet:#a78bfa;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16213d 0%,var(--bg) 55%) fixed,var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+  header{max-width:1100px;margin:0 auto;padding:40px 24px 8px;display:flex;align-items:center;gap:18px}
+  header img{width:64px;height:64px;border-radius:16px}
+  h1{margin:0;font-size:2rem;letter-spacing:-.5px}
+  .sub{color:var(--muted);margin:4px 0 0}
+  .badge{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:#13243f;color:var(--accent);border:1px solid #274268;margin-top:10px}
+  main{max-width:1100px;margin:0 auto;padding:16px 24px 64px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:18px;padding:20px}
+  textarea{width:100%;min-height:340px;background:#0a0f1c;color:var(--txt);border:1px solid var(--line);border-radius:12px;padding:14px;font-family:ui-monospace,Menlo,monospace;font-size:.82rem;resize:vertical}
+  button.primary{background:linear-gradient(135deg,#38bdf8,#818cf8);border:0;color:#06121f;font-weight:800;font-size:1rem;padding:13px 22px;border-radius:12px;cursor:pointer;margin-top:12px;width:100%}
+  button.primary:disabled{opacity:.55;cursor:wait}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:12px;padding:10px 16px;cursor:pointer;margin-top:8px;width:100%}
+  .fine{font-size:.75rem;color:var(--muted);margin-top:10px}
+  .trace{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;background:#0a0f1c;border:1px solid var(--line);border-radius:12px;padding:14px;min-height:340px;max-height:520px;overflow:auto;white-space:pre-wrap}
+  .trace .ok{color:var(--green)} .trace .run{color:var(--accent)}
+  #results{margin-top:26px;display:none}
+  .verdict{border-radius:18px;padding:22px;border:1px solid var(--line);margin-bottom:20px;background:linear-gradient(135deg,#101c33,#131a2e)}
+  .sev{display:inline-block;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:999px}
+  .critical{background:#3b0d0d;color:#fca5a5;border:1px solid #7f1d1d}
+  .high{background:#3a2708;color:#fcd34d;border:1px solid #92400e}
+  .medium{background:#12283f;color:#7dd3fc;border:1px solid #1e40af}
+  .low{background:#0d2b22;color:#6ee7b7;border:1px solid #065f46}
+  .clause{margin-bottom:14px}
+  .clause h4{margin:0 0 6px;font-size:1.02rem}
+  .risks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.9rem}
+  .redline{margin-top:10px;background:#0a0f1c;border:1px dashed #2b3a5e;border-radius:12px;padding:12px;font-size:.88rem}
+  .strike{color:#fca5a5;text-decoration:line-through}
+  .fixed{color:#6ee7b7}
+  .note{color:var(--muted);font-style:italic;margin-top:8px}
+  .score{font-size:2.4rem;font-weight:800}
+  .sim{display:none;background:#3a2708;border:1px solid #92400e;color:#fcd34d;font-weight:700;text-align:center;border-radius:12px;padding:10px;margin-bottom:16px;font-size:.85rem}
+  .err{background:#3b0d0d;border:1px solid #7f1d1d;color:#fca5a5;border-radius:12px;padding:12px;margin-top:12px;display:none}
+  footer{max-width:1100px;margin:0 auto;padding:0 24px 48px;color:var(--muted);font-size:.8rem}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<header>
+  <img src="../assets/logo.png" alt="Clausewise logo" onerror="this.style.display='none'">
+  <div>
+    <h1>Clausewise</h1>
+    <p class="sub">An agentic contract-review copilot — powered by NVIDIA Nemotron-3-Super on Nebius Token Factory.</p>
+    <span class="badge">Best Apps &amp; Agents · Nebius × NVIDIA Hackathon</span>
+  </div>
+</header>
+<main>
+  <div id="simBanner" class="sim">⚠ SHOWCASE MODE — simulated analysis for demo purposes. Connect a Nebius API key for live reviews.</div>
+  <div class="grid">
+    <div class="card">
+      <h3 style="margin-top:0">1 · Paste your contract</h3>
+      <textarea id="contract" placeholder="Paste NDA, freelancer agreement, offer letter…">{{ sample_nda }}</textarea>
+      <button class="primary" id="analyzeBtn">⚖️ Run agent review</button>
+      <button class="ghost" id="sampleBtn">Load sample NDA</button>
+      <div class="err" id="err"></div>
+      <p class="fine">The agent runs 5 steps on <code>nvidia/nemotron-3-super-120b-a12b</code> via <code>api.tokenfactory.nebius.com</code>: extract → triage → redline → verify → brief. Not legal advice.</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">2 · Agent trace <span class="fine">(live)</span></h3>
+      <div class="trace" id="trace">Idle — the agent's steps will appear here as it works…</div>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="verdict" id="verdict"></div>
+    <div class="grid">
+      <div>
+        <h3>Clause risk report</h3>
+        <div id="clauses"></div>
+      </div>
+      <div>
+        <h3>Negotiation redlines</h3>
+        <div id="redlines"></div>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+  Clausewise · MIT licensed · Built for the Nebius × NVIDIA Global AI Hackathon.<br>
+  Reviews are generated by an AI model and are <b>not legal advice</b>. Consult a qualified lawyer before signing anything.
+</footer>
+<script>
+const DEMO = {{ 'true' if demo_mode else 'false' }};
+if (DEMO) document.getElementById('simBanner').style.display = 'block';
+const SAMPLE = {{ sample_nda | tojson }};
+document.getElementById('sampleBtn').onclick = () => { document.getElementById('contract').value = SAMPLE; };
+
+const traceEl = document.getElementById('trace');
+function traceLine(msg, cls){ const d=document.createElement('div'); d.className=cls||''; d.textContent=msg; traceEl.appendChild(d); traceEl.scrollTop=traceEl.scrollHeight; }
+
+const esc = s => String(s??'').replace(/[&<>\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+document.getElementById('analyzeBtn').onclick = async () => {
+  const btn = document.getElementById('analyzeBtn');
+  const err = document.getElementById('err');
+  err.style.display='none';
+  const text = document.getElementById('contract').value.trim();
+  if(!text){ err.textContent='Paste contract text first.'; err.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = 'Agent working…';
+  traceEl.innerHTML='';
+  document.getElementById('results').style.display='none';
+  ['extract → splitting contract into clauses','triage → risk-scoring each clause','redline → drafting negotiation redlines','verify → self-checking the report','brief → writing your negotiation brief']
+    .forEach((s,i)=>setTimeout(()=>traceLine('▸ '+s,'run'), 250*i));
+  try{
+    const r = await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contract:text})});
+    const data = await r.json();
+    if(!r.ok) throw new Error(data.error || 'Request failed');
+    render(data);
+    traceLine('✓ review complete — ' + data.trace.length + ' agent steps, ' + data.risk_assessments.length + ' clauses scored','ok');
+  }catch(e){ err.textContent = e.message; err.style.display='block'; traceLine('✗ '+e.message,''); }
+  finally{ btn.disabled=false; btn.textContent='⚖️ Run agent review'; }
+};
+
+function render(d){
+  document.getElementById('results').style.display='block';
+  const b = d.brief;
+  document.getElementById('verdict').innerHTML =
+    '<div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">' +
+    (b.overall_score!=null ? '<div><div class="score">'+esc(b.overall_score)+'<span style="font-size:1rem;color:#93a3c4">/100</span></div><div class="fine">contract health</div></div>':'') +
+    '<div style="flex:1;min-width:240px"><span class="sev ' + esc(b.verdict) + '">' + esc((b.verdict||'').replace('_',' ')) + '</span>' +
+    '<p style="margin:8px 0 0">'+esc(b.verdict_reason)+'</p>' +
+    '<ul class="risks">' + (b.top_actions||[]).map(a=>'<li>'+esc(a)+'</li>').join('') + '</ul></div></div>';
+
+  document.getElementById('clauses').innerHTML = d.risk_assessments.map(a =>
+    '<div class="card clause"><h4><span class="sev '+a.severity+'">'+a.severity+'</span> '+esc(a.title)+'</h4>' +
+    (a.quote?'<div class="fine">“'+esc(a.quote)+'”</div>':'') +
+    '<div style="font-size:.92rem;margin-top:6px">'+esc(a.explanation)+'</div>' +
+    (a.risks&&a.risks.length?'<ul class="risks">'+a.risks.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'') +
+    '</div>').join('');
+
+  document.getElementById('redlines').innerHTML = d.redlines.length ? d.redlines.map(r =>
+    '<div class="card clause"><h4><span class="sev '+r.severity+'">'+r.severity+'</span> '+esc(r.title)+'</h4>' +
+    '<div class="redline"><div class="strike">'+esc(r.original)+'</div><div class="fixed" style="margin-top:6px">'+esc(r.redlined)+'</div>' +
+    '<div class="note">'+esc(r.negotiation_note)+'</div></div></div>').join('')
+    : '<div class="card fine">No critical/high-risk clauses — nothing to redline. 🎉</div>';
+
+  if(d.verification && !d.verification.passed){
+    document.getElementById('verdict').innerHTML += '<div class="err" style="display:block">Agent self-check flagged: '+esc((d.verification.issues||[]).join('; '))+'</div>';
+  }
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
