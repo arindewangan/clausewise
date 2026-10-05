@@ -117,7 +117,7 @@ def step_redline(client, clause_lookup: dict, assessments: list[dict]) -> list[d
             "Draft a negotiation redline for this risky clause. Rewrite it to protect the "
             "signing party while staying realistic for a counterparty to accept. Return JSON:\n"
             '{"original":"...","redlined":"...","negotiation_note":"why this change and how to argue for it"}\n\n'
-            f'RISKS: {"; ".join(a["risks"])}- {clause.get("text", "")}',
+            f'RISKS: {"; ".join(a["risks"])}\nCLAUSE:\n{clause.get("text", "")}',
             max_tokens=2000,
         )
         redlines.append(
