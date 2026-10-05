@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clausewise — Showcase Demo (Simulated)</title>
+<style>
+  :root{--bg:#0b0f1a;--panel:#111827;--line:#1f2a44;--txt:#e8eefc;--muted:#93a3c4;--accent:#7dd3fc;--green:#34d399;--amber:#fbbf24;--red:#f87171}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.55}
+  .sim-banner{background:repeating-linear-gradient(45deg,#3a2708,#3a2708 14px,#33220a 14px,#33220a 28px);border-bottom:2px solid #92400e;color:#fcd34d;font-weight:800;text-align:center;padding:12px 16px;font-size:.9rem;letter-spacing:.04em}
+  header{max-width:1000px;margin:0 auto;padding:32px 24px 8px;display:flex;gap:16px;align-items:center}
+  header img{width:56px;height:56px;border-radius:14px}
+  h1{margin:0;font-size:1.8rem}
+  .sub{color:var(--muted);margin:4px 0 0;font-size:.95rem}
+  main{max-width:1000px;margin:0 auto;padding:12px 24px 56px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px}
+  .sev{display:inline-block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:999px}
+  .critical{background:#3b0d0d;color:#fca5a5;border:1px solid #7f1d1d}
+  .high{background:#3a2708;color:#fcd34d;border:1px solid #92400e}
+  .medium{background:#12283f;color:#7dd3fc;border:1px solid #1e40af}
+  .low{background:#0d2b22;color:#6ee7b7;border:1px solid #065f46}
+  .trace{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;background:#0a0f1c;border:1px solid var(--line);border-radius:12px;padding:14px}
+  .trace .ok{color:var(--green)} .trace .run{color:var(--accent)}
+  .redline{margin-top:10px;background:#0a0f1c;border:1px dashed #2b3a5e;border-radius:12px;padding:12px;font-size:.88rem}
+  .strike{color:#fca5a5;text-decoration:line-through}
+  .fixed{color:#6ee7b7;margin-top:6px}
+  .note{color:var(--muted);font-style:italic;margin-top:8px}
+  .risks{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:.9rem}
+  .score{font-size:2.2rem;font-weight:800}
+  .tag{display:inline-block;font-size:.65rem;font-weight:800;background:#13243f;color:var(--accent);border:1px solid #274268;border-radius:6px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+  footer{max-width:1000px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:.8rem}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="sim-banner">⚠ SHOWCASE MODE — every result below is a CANNED, SIMULATED example. Run the live app with a Nebius API key for real reviews.</div>
+<header>
+  <img src="../assets/logo.png" alt="Clausewise logo" onerror="this.style.display='none'">
+  <div>
+    <h1>Clausewise <span class="tag">SIMULATED SHOWCASE</span></h1>
+    <p class="sub">Agentic contract review · NVIDIA Nemotron-3-Super on Nebius Token Factory · Best Apps &amp; Agents</p>
+  </div>
+</header>
+<main>
+  <div class="card">
+    <h3 style="margin-top:0">Agent trace <span class="tag">SIMULATED</span></h3>
+    <div class="trace">
+      <div class="ok">✓ extract — Split contract into 7 clauses (1 model call)</div>
+      <div class="ok">✓ triage — Risk-scored 7 clauses (7 model calls)</div>
+      <div class="ok">✓ redline — Drafted 3 redlines for critical/high clauses (3 model calls)</div>
+      <div class="ok">✓ verify — Self-check passed: no missed clauses, no contradictions</div>
+      <div class="ok">✓ brief — Verdict: negotiate (1 model call)</div>
+      <div class="run">▸ 13 runtime calls to nvidia/nemotron-3-super-120b-a12b via api.tokenfactory.nebius.com</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Negotiation brief <span class="tag">SIMULATED</span></h3>
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+      <div><div class="score">58<span style="font-size:1rem;color:#93a3c4">/100</span></div><div style="font-size:.75rem;color:#93a3c4">contract health</div></div>
+      <div style="flex:1;min-width:240px">
+        <span class="sev high">negotiate</span>
+        <p style="margin:8px 0 0">The NDA is broadly standard but the non-compete and remedies clauses are one-sided and must be narrowed before signing.</p>
+        <ul class="risks">
+          <li>Push back on the 5-year worldwide non-compete — ask for 12 months, limited territory</li>
+          <li>Cap the secrecy term at 3 years instead of 10</li>
+          <li>Make remedies mutual or add an irreparable-harm standard</li>
+          <li>Confirm which entity's law governs disputes and where you'd be sued</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Clause risk report <span class="tag">SIMULATED</span></h3>
+    <div class="card" style="background:#0d1424"><h4 style="margin:0 0 6px"><span class="sev critical">critical</span> Non-Compete</h4>
+      <div style="font-size:.85rem;color:#93a3c4">“anywhere in the world”</div>
+      <div style="font-size:.92rem;margin-top:6px">A five-year global non-compete is unenforceable in many jurisdictions and a major red flag.</div>
+      <ul class="risks"><li>5-year worldwide ban is far beyond market norm (6–12 months, limited geography)</li><li>Could block future employment across the industry</li></ul></div>
+    <div class="card" style="background:#0d1424"><h4 style="margin:0 0 6px"><span class="sev high">high</span> Remedies</h4>
+      <div style="font-size:.92rem;margin-top:6px">One-sided remedies clause — the counterparty gets fast-track court orders.</div>
+      <ul class="risks"><li>Injunctive relief without proving damages lowers the bar for lawsuits against you</li></ul></div>
+    <div class="card" style="background:#0d1424"><h4 style="margin:0 0 6px"><span class="sev high">high</span> Non-Use and Non-Disclosure</h4>
+      <div style="font-size:.92rem;margin-top:6px">A decade-long obligation is unusually long for a mutual NDA.</div>
+      <ul class="risks"><li>10-year secrecy term exceeds the typical 2–5 year market standard</li></ul></div>
+    <div class="card" style="background:#0d1424"><h4 style="margin:0 0 6px"><span class="sev medium">medium</span> Non-Solicitation</h4>
+      <div style="font-size:.92rem;margin-top:6px">Broad but within the range seen in practice.</div></div>
+    <div class="card" style="background:#0d1424;margin-bottom:0"><h4 style="margin:0 0 6px"><span class="sev low">low</span> Confidential Information · Return of Materials</h4>
+      <div style="font-size:.92rem;margin-top:6px">Standard, balanced clauses — no action needed.</div></div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">Negotiation redlines <span class="tag">SIMULATED</span></h3>
+    <div class="card" style="background:#0d1424"><h4 style="margin:0 0 6px"><span class="sev critical">critical</span> Non-Compete</h4>
+      <div class="redline"><div class="strike">For a period of five (5) years after termination, the Receiving Party shall not engage in any competitive business anywhere in the world.</div>
+      <div class="fixed">For a period of twelve (12) months after termination, the Receiving Party shall not engage in a directly competitive business within the territory where the Disclosing Party operates.</div>
+      <div class="note">Counter with 12 months + limited geography. 5-year global bans are unenforceable in California, India, and much of the EU — the counterparty gains nothing enforceable.</div></div></div>
+    <div class="card" style="background:#0d1424"><h4 style="margin:0 0 6px"><span class="sev high">high</span> Remedies</h4>
+      <div class="redline"><div class="strike">Entitled to injunctive relief without proof of damages.</div>
+      <div class="fixed">Entitled to seek injunctive relief upon a showing of threatened irreparable harm, in addition to any other remedies available at law.</div>
+      <div class="note">Ask for mutual remedies or at least a “threatened irreparable harm” standard.</div></div></div>
+    <div class="card" style="background:#0d1424;margin-bottom:0"><h4 style="margin:0 0 6px"><span class="sev high">high</span> Non-Use and Non-Disclosure</h4>
+      <div class="redline"><div class="strike">Shall not disclose Confidential Information for 10 years.</div>
+      <div class="fixed">Shall not disclose Confidential Information for 3 years from disclosure.</div>
+      <div class="note">10 years is unusual for a mutual NDA; 2–5 years is market. Trade secrets can stay perpetual separately.</div></div></div>
+  </div>
+
+  <div class="card" style="text-align:center">
+    <p style="margin:0 0 10px">This showcase is canned. The live app calls <b>nvidia/nemotron-3-super-120b-a12b</b> on <b>Nebius Token Factory</b> at runtime.</p>
+    <p style="margin:0;font-size:.85rem;color:#93a3c4">Run it: <code>export NEBIUS_API_KEY=…</code> → <code>pip install -r requirements.txt</code> → <code>python app.py</code> — or keyless with <code>CLAUSEWISE_DEMO=1</code>.</p>
+  </div>
+</main>
+<footer>
+  Clausewise · MIT licensed · Built for the Nebius × NVIDIA Global AI Hackathon.<br>
+  Showcase results are simulated examples, <b>not legal advice</b>.
+</footer>
+</body>
+</html>
